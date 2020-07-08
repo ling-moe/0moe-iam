@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingmoe.oauth.infra.mapper.UserMapper">
+
+    <resultMap type="cn.lingmoe.iam.domain.entity.UserInfo" id="UserMap">
+        <result property="userId" column="user_id" jdbcType="DECIMAL"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="expiredFlag" column="expired_flag" jdbcType="INTEGER"/>
+        <result property="locakedFlag" column="locaked_flag" jdbcType="INTEGER"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="INTEGER"/>
+        <result property="passwordExpiredFlag" column="password_expired_flag" jdbcType="INTEGER"/>
+        <result property="objectVersionNumber" column="object_version_number" jdbcType="DECIMAL"/>
+        <result property="creationDate" column="creation_date" jdbcType="DATE"/>
+        <result property="createdBy" column="created_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdatedBy" column="last_updated_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdateDate" column="last_update_date" jdbcType="DATE"/>
+    </resultMap>
+
+</mapper>

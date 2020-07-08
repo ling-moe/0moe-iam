@@ -1,0 +1,31 @@
+server:
+  port: 8030
+spring:
+  application:
+    name: iam
+  cloud:
+    consul:
+      discovery:
+        service-name: ${spring.application.name}
+        acl-token: bef68e54-6195-2c65-227d-a840f9f745ee
+  security:
+    oauth2:
+      jwt:
+        SigningKey: 0moe
+mybatis:
+  type-aliases-package: cn.lingmoe.iam.domain.entity
+dubbo:
+  application:
+    name: ${spring.application.name}
+  registry:
+    address: consul://${spring.cloud.consul.host}:${spring.cloud.consul.port}?token=${spring.cloud.consul.discovery.acl-token}
+  protocol:
+    port: 8102
+    name: dubbo
+  consumer:
+    check: false
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix: iam_
+    banner: false

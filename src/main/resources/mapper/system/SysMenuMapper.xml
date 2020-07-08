@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingmoe.iam.infra.mapper.SysMenuMapper">
+
+    <resultMap type="cn.lingmoe.iam.domain.entity.SysMenu" id="SysMenuResult">
+        <id property="menuId" column="menu_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="target" column="target"/>
+        <result property="menuKey" column="menu_key"/>
+        <result property="component" column="component"/>
+        <result property="visible" column="visible"/>
+        <result property="perms" column="perms"/>
+        <result property="icon" column="icon"/>
+        <result property="path" column="path"/>
+        <result property="redirect" column="redirect"/>
+        <result property="hiddenChildren" column="hidden_children"/>
+        <result property="hiddenHeader" column="hidden_header"/>
+        <result property="createdBy" column="create_by"/>
+        <result property="creationDate" column="create_time"/>
+        <result property="lastUpdateDate" column="update_time"/>
+        <result property="lastUpdatedBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectMenuVo">
+        SELECT menu_id,
+               menu_name,
+               parent_id,
+               order_num,
+               menu_type,
+               component,
+               visible,
+               ifnull(perms, '') AS perms,
+               icon,
+               path,
+               create_by,
+               create_time
+        FROM sys_menu
+    </sql>
+
+    <select id="selectMenusByUserId" parameterType="Long"
+            resultMap="SysMenuResult">
+        SELECT m.menu_id,
+               m.parent_id,
+               m.level,
+               m.menu_name,
+               m.perms,
+               m.menu_type,
+               m.component,
+               m.icon,
+               m.path,
+               m.order_num,
+               m.visible,
+               m.create_time
+        FROM sys_menu m
+                 LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+                 LEFT JOIN sys_user_role ur ON rm.role_id = ur.role_id
+                 LEFT JOIN sys_role ro ON ur.role_id = ro.role_id
+        WHERE ur.user_id =
+              #{userId}
+          AND m.menu_type IN ('M', 'C')
+          AND ro.status = 0
+        ORDER BY m.order_num
+    </select>
+
+    <select id="selectMenuNormalAll" resultType="cn.lingmoe.iam.domain.entity.SysMenu">
+        SELECT m.menu_id,
+               m.parent_id,
+               m.menu_name,
+               m.menu_type,
+               m.shortcut,
+               m.icon,
+               m.level_path,
+               m.order_num,
+               m.router,
+               m.creation_date
+        FROM sys_menu m
+        WHERE m.menu_type IN ('R', 'D', 'M')
+    </select>
+
+    <select id="selectMenuAll" resultMap="SysMenuResult">
+        <include refid="selectMenuVo"/>
+        order by order_num
+    </select>
+
+    <select id="selectPermsByUserId" parameterType="Long"
+            resultType="String">
+        SELECT DISTINCT m.perms
+        FROM sys_menu m
+                 LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+                 LEFT JOIN sys_user_role ur ON rm.role_id = ur.role_id
+        WHERE ur.user_id =
+              #{userId}
+    </select>
+
+    <select id="selectMenuIdsByRoleId" parameterType="Long"
+            resultMap="SysMenuResult">
+        SELECT DISTINCT m.menu_id, m.parent_id
+        FROM sys_menu m
+                 LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+        WHERE rm.role_id =
+              #{roleId}
+    </select>
+
+
+    <select id="selectMenuTree" parameterType="Long"
+            resultType="String">
+        SELECT concat(m.menu_id, ifnull(m.perms, '')) AS perms
+        FROM sys_menu m
+                 LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+        WHERE rm.role_id =
+              #{roleId}
+        ORDER BY m.parent_id, m.order_num
+    </select>
+
+    <select id="selectMenuList" resultType="cn.lingmoe.iam.domain.entity.SysMenu">
+        SELECT
+            m.menu_id,
+            m.menu_code,
+            m.menu_name,
+            m.parent_id,
+            m.order_num,
+            m.menu_type,
+            m.icon,
+            m.level_path,
+            m.enabled_flag,
+            m.created_by,
+            m.creation_date
+        FROM sys_menu m
+        WHERE m.menu_type IN ('R', 'D', 'M')
+            <if test="menuCode != null and menuCode != ''">
+                <bind name="menuCodeLike" value="'%' + menuCode + '%'"/>
+                AND menu_code LIKE #{menuCodeLike}
+            </if>
+            <if test="menuName != null and menuName != ''">
+                <bind name="menuNameLike" value="'%' + menuName + '%'"/>
+                AND menu_name LIKE #{menuNameLike}
+            </if>
+        order by order_num
+    </select>
+
+    <delete id="deleteMenuById" parameterType="Long">
+        DELETE
+        FROM sys_menu
+        WHERE menu_id = #{menuId}
+           OR parent_id = #{menuId}
+    </delete>
+
+    <select id="selectMenuById" parameterType="Long"
+            resultMap="SysMenuResult">
+        SELECT t.menu_id,
+               t.parent_id,
+               t.menu_name,
+               t.order_num,
+               t.menu_type,
+               t.visible,
+               t.perms,
+               t.icon,
+               t.path,
+               t.remark,
+               (SELECT menu_name FROM sys_menu WHERE menu_id = t.parent_id) parent_name
+        FROM sys_menu t
+        WHERE t.menu_id = #{menuId}
+    </select>
+
+    <select id="selectCountMenuByParentId" resultType="Integer">
+        SELECT count(1)
+        FROM sys_menu
+        WHERE parent_id = #{menuId}
+    </select>
+
+    <select id="checkMenuNameUnique" parameterType="cn.lingmoe.iam.domain.entity.SysMenu"
+            resultMap="SysMenuResult">
+        <include refid="selectMenuVo"/>
+        where menu_name=#{menuName} and parent_id = #{parentId}
+    </select>
+
+    <update id="updateMenu" parameterType="cn.lingmoe.iam.domain.entity.SysMenu">
+        update sys_menu
+        <set>
+            <if test="menuName != null and menuName != ''">menu_name = #{menuName},</if>
+            <if test="parentId != null and parentId != 0">parent_id = #{parentId},</if>
+            <if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+            <if test="menuType != null and menuType != ''">menu_type = #{menuType},</if>
+            <if test="target != null">target = #{target},</if>
+            <if test="menuKey != null and menuKey != ''">menu_key = #{menuKey},</if>
+            <if test="component != null">component = #{component},</if>
+            <if test="visible != null">visible = #{visible},</if>
+            <if test="perms !=null">perms = #{perms},</if>
+            <if test="icon !=null and icon != ''">icon = #{icon},</if>
+            <if test="path !=null">path = #{path},</if>
+            <if test="redirect !=null">redirect = #{redirect},</if>
+            <if test="hiddenChildren !=null">hidden_children = #{hiddenChildren},</if>
+            <if test="hiddenHeader !=null">hidden_header = #{hiddenHeader},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where menu_id = #{menuId}
+    </update>
+
+    <insert id="insertMenu" parameterType="cn.lingmoe.iam.domain.entity.SysMenu">
+        insert into sys_menu(
+        <if test="menuId != null and menuId != 0">menu_id,</if>
+        <if test="parentId != null and parentId != 0">parent_id,</if>
+        <if test="menuName != null and menuName != ''">menu_name,</if>
+        <if test="orderNum != null and orderNum != ''">order_num,</if>
+        <if test="menuType != null and menuType != ''">menu_type,</if>
+        <if test="component != null and component != ''">component ,</if>
+        <if test="visible != null">visible,</if>
+        <if test="perms !=null and perms != ''">perms,</if>
+        <if test="icon != null and icon != ''">icon,</if>
+        <if test="path !=null and path != ''">path,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        create_time
+        )values(
+        <if test="menuId != null and menuId != 0">#{menuId},</if>
+        <if test="parentId != null and parentId != 0">#{parentId},</if>
+        <if test="menuName != null and menuName != ''">#{menuName},</if>
+        <if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+        <if test="menuType != null and menuType != ''">#{menuType},</if>
+        <if test="component != null and component != ''">#{component},</if>
+        <if test="visible != null">#{visible},</if>
+        <if test="perms !=null and perms != ''">#{perms},</if>
+        <if test="icon != null and icon != ''">#{icon},</if>
+        <if test="path !=null and path != ''">#{path},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        sysdate()
+        )
+    </insert>
+
+</mapper>

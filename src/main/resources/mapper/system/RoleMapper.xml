@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingmoe.oauth.infra.mapper.RoleMapper">
+
+    <resultMap type="cn.lingmoe.iam.domain.entity.RoleInfo" id="RoleMap">
+        <result property="roleId" column="role_id" jdbcType="DECIMAL"/>
+        <result property="roleCode" column="role_code" jdbcType="VARCHAR"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="INTEGER"/>
+        <result property="objectVersionNumber" column="object_version_number" jdbcType="DECIMAL"/>
+        <result property="creationDate" column="creation_date" jdbcType="DATE"/>
+        <result property="createdBy" column="created_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdatedBy" column="last_updated_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdateDate" column="last_update_date" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectRoleByUserId" resultType="cn.lingmoe.iam.domain.entity.RoleInfo">
+        SELECT
+            r.role_id,
+            r.role_code,
+            r.role_name,
+            r.enabled_flag
+        FROM
+            role r
+        JOIN user_role ur ON r.role_id = ur.user_role_id
+        WHERE
+            ur.user_id = #{userId}
+    </select>
+
+</mapper>

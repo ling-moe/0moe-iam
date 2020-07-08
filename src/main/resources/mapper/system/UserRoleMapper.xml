@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lingmoe.oauth.infra.mapper.UserRoleMapper">
+
+    <resultMap type="cn.lingmoe.iam.domain.entity.UserRole" id="UserRoleMap">
+        <result property="userRoleId" column="user_role_id" jdbcType="DECIMAL"/>
+        <result property="userId" column="user_id" jdbcType="DECIMAL"/>
+        <result property="roleId" column="role_id" jdbcType="DECIMAL"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="INTEGER"/>
+        <result property="objectVersionNumber" column="object_version_number" jdbcType="DECIMAL"/>
+        <result property="creationDate" column="creation_date" jdbcType="DATE"/>
+        <result property="createdBy" column="created_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdatedBy" column="last_updated_by" jdbcType="DECIMAL"/>
+        <result property="lastUpdateDate" column="last_update_date" jdbcType="DATE"/>
+    </resultMap>
+
+</mapper>
