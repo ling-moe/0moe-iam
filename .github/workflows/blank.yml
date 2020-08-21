@@ -1,0 +1,44 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  dependency:
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - name: Cache local Maven repository
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Publish dependency
+      uses: samuelmeuli/action-maven-publish@v1.4.0
+      with:
+        # Username (not email!) for your Nexus repository manager account
+        nexus_username: EIyoFD
+        # Password for your Nexus account
+        nexus_password: DQvy0Ieh5G
+        # Nexus server ID as specified in your project's `nexus-staging-maven-plugin` and `distributionManagement` configurations
+        server_id: rdc-snapshots
+        # Additional arguments to pass to the Maven command
+        maven_args: -DaltDeploymentRepository=rdc-snapshots::default::https://repo.rdc.aliyun.com/repository/132936-snapshot-gfKqCh/ -Dmaven.test.skip=true
+        maven_goals_phases: clean deploy package docker:build
+    - name: Push Docker Image
+      uses: julioarruda/pushimagetoregistry@v1
+      with:
+        acr-tokenname: 571863559
+        acr-token: Asd.54188+
+        acr-account: ccr.ccs.tencentyun.com
+        acr-imagename: ccr.ccs.tencentyun.com/0moe/backend-iam:latest

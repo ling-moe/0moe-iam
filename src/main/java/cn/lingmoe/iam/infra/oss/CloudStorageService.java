@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import cn.hutool.core.date.DateUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 云存储(支持七牛、阿里云、腾讯云、又拍云)
