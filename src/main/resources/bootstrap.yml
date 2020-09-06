@@ -1,8 +1,3 @@
-
-logging:
-  level:
-    cn.lingmoe.iam: ${LOGGING_LEVEL:debug}
-    org.springframework.security: debug
 # 不需要配置端口，和服务共用一个
 management:
   endpoint:

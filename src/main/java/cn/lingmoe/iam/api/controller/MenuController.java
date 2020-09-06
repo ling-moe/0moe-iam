@@ -6,7 +6,7 @@ import java.util.Set;
 import cn.hutool.core.lang.tree.Tree;
 import cn.lingmoe.common.Result.Results;
 import cn.lingmoe.iam.app.service.ISysMenuService;
-import cn.lingmoe.iam.domain.entity.SysMenu;
+import cn.lingmoe.iam.domain.entity.Menu;
 import cn.lingmoe.iam.domain.entity.UserInfo;
 import cn.lingmoe.log.annotation.OperLog;
 import cn.lingmoe.log.enums.BusinessType;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/menu")
-public class SysMenuController {
+public class MenuController {
     @Autowired
     private ISysMenuService sysMenuService;
 
@@ -30,7 +30,7 @@ public class SysMenuController {
      * 查询菜单权限
      */
     @GetMapping("/get/{menuId}")
-    public ResponseEntity<SysMenu> get(@PathVariable("menuId") Long menuId) {
+    public ResponseEntity<Menu> get(@PathVariable("menuId") Long menuId) {
         return Results.ok(sysMenuService.selectMenuById(menuId));
     }
 
@@ -55,7 +55,7 @@ public class SysMenuController {
      * @author yukdawn@gmail.com
      */
     @GetMapping("/role/{roleId}")
-    public ResponseEntity<List<SysMenu>> role(@PathVariable("roleId") Long roleId) {
+    public ResponseEntity<List<Menu>> role(@PathVariable("roleId") Long roleId) {
         return Results.ok(sysMenuService.selectMenuIdsByRoleId(roleId));
     }
 
@@ -64,17 +64,17 @@ public class SysMenuController {
      */
 //    @HasPermissions("system:menu:view")
     @GetMapping("/list")
-    public ResponseEntity<List<Tree<Long>>> list(SysMenu sysMenu) {
-        return Results.ok(sysMenuService.selectMenuList(sysMenu));
+    public ResponseEntity<List<Tree<Long>>> list(Menu menu) {
+        return Results.ok(sysMenuService.selectMenuList(menu));
     }
 
     /**
      * 新增保存菜单权限
      */
-    @PostMapping("/save")
+    @PostMapping
     @OperLog(title = "菜单管理", businessType = BusinessType.INSERT)
-    public ResponseEntity<Void> addSave(@RequestBody SysMenu sysMenu) {
-        sysMenuService.insertMenu(sysMenu);
+    public ResponseEntity<Void> addSave(@RequestBody Menu menu) {
+        sysMenuService.insertMenu(menu);
         return Results.ok();
     }
 
@@ -83,8 +83,8 @@ public class SysMenuController {
      */
     @OperLog(title = "菜单管理", businessType = BusinessType.UPDATE)
     @PostMapping("/update")
-    public ResponseEntity<Void> editSave(@RequestBody SysMenu sysMenu) {
-        sysMenuService.updateMenu(sysMenu);
+    public ResponseEntity<Void> editSave(@RequestBody Menu menu) {
+        sysMenuService.updateMenu(menu);
         return Results.ok();
     }
 

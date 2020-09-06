@@ -1,8 +1,8 @@
 server:
-  port: 8020
+  port: ${SERVER.PORT:8021}
 spring:
   application:
-    name: iam
+    name: iam-dawn
   profiles:
     include: druid
   security:
@@ -14,6 +14,12 @@ spring:
     database: 1
     password:  ${SPRING_REDIS_PASSWORD:LyzavGmsILOblYbN78DiWGzOhRPgaVtG}
     port: ${SPRING_REDIS_PORT:11954}
+  cloud:
+    consul:
+      host: consul.resource.0moe.cn
+      port: 80
+      discovery:
+        acl-token: bef68e54-6195-2c65-227d-a840f9f745ee
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
@@ -34,3 +40,7 @@ mybatis-plus:
     db-config:
       table-prefix: iam_
     banner: false
+logging:
+  level:
+    cn.lingmoe.iam: ${LOGGING_LEVEL:debug}
+    org.springframework.security: debug

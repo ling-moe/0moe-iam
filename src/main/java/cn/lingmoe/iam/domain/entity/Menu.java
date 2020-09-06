@@ -4,21 +4,23 @@ import java.util.List;
 
 import cn.lingmoe.mybatis.domain.BaseDomain;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 菜单权限表 sys_menu
+ * 菜单权限表 iam_menu
  *
  * @author ruoyi
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SysMenu extends BaseDomain {
+public class Menu extends BaseDomain {
 
     /**
      * 菜单ID
      */
+    @TableId
     private Long menuId;
     /**
      * 菜单编码
@@ -60,10 +62,10 @@ public class SysMenu extends BaseDomain {
      * 菜单的绝对路径
      */
     private String levelPath;
-    private boolean enabledFlag;
+    private Boolean enabledFlag;
     /**
      * 子菜单
      */
     @TableField(exist = false)
-    private List<SysMenu> children;
+    private List<Menu> children;
 }

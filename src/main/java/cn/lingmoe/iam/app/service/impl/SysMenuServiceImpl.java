@@ -13,9 +13,9 @@ import cn.lingmoe.common.datastruct.Ztree;
 import cn.lingmoe.core.security.helper.SecurityHelper;
 import cn.lingmoe.iam.app.service.ISysMenuService;
 import cn.lingmoe.iam.domain.entity.RoleInfo;
-import cn.lingmoe.iam.domain.entity.SysMenu;
+import cn.lingmoe.iam.domain.entity.Menu;
 import cn.lingmoe.iam.domain.entity.UserInfo;
-import cn.lingmoe.iam.infra.mapper.SysMenuMapper;
+import cn.lingmoe.iam.infra.mapper.MenuMapper;
 import cn.lingmoe.iam.infra.mapper.SysRoleMenuMapper;
 import cn.lingmoe.redis.cache.annotation.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class SysMenuServiceImpl implements ISysMenuService {
 
     @Autowired
-    private SysMenuMapper menuMapper;
+    private MenuMapper menuMapper;
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
 
@@ -44,7 +44,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
     public List<Tree<Long>> selectMenusByUser(UserInfo user) {
         System.out.println(SecurityHelper.getUserDetails());
         user.setUserId(2L);
-        List<SysMenu> menus;
+        List<Menu> menus;
         menus = menuMapper.selectMenuNormalAll();
         // 管理员显示所有菜单信息
 //        if (user.isAdmin()) {
@@ -61,8 +61,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 所有菜单信息
      */
     @Override
-    public List<Tree<Long>> selectMenuList(SysMenu menuDTO) {
-        List<SysMenu> menus = menuMapper.selectMenuList(menuDTO);
+    public List<Tree<Long>> selectMenuList(Menu menuDTO) {
+        List<Menu> menus = menuMapper.selectMenuList(menuDTO);
         return this.menuListToTree(menus);
     }
 
@@ -72,7 +72,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 所有菜单信息
      */
     @Override
-    public List<SysMenu> selectMenuAll() {
+    public List<Menu> selectMenuAll() {
         return menuMapper.selectMenuAll();
     }
 
@@ -96,7 +96,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
     }
 
     @Override
-    public List<SysMenu> selectMenuIdsByRoleId(Long roleId) {
+    public List<Menu> selectMenuIdsByRoleId(Long roleId) {
         return menuMapper.selectMenuIdsByRoleId(roleId);
     }
 
@@ -125,7 +125,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @param menuList 菜单list
      * @return 菜单树
      */
-    private List<Tree<Long>> menuListToTree(List<SysMenu> menuList){
+    private List<Tree<Long>> menuListToTree(List<Menu> menuList){
         return TreeUtil
                 .build(menuList.stream()
                         .map(menu -> new TreeNode<>(menu.getMenuId(), menu.getParentId(), menu.getMenuName(), menu.getOrderNum())
@@ -151,7 +151,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 菜单信息
      */
     @Override
-    public SysMenu selectMenuById(Long menuId) {
+    public Menu selectMenuById(Long menuId) {
         return menuMapper.selectMenuById(menuId);
     }
 
@@ -184,8 +184,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 结果
      */
     @Override
-    public int insertMenu(SysMenu menu) {
-        return menuMapper.insertMenu(menu);
+    public int insertMenu(Menu menu) {
+        return menuMapper.insert(menu);
     }
 
     /**
@@ -195,7 +195,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 结果
      */
     @Override
-    public int updateMenu(SysMenu menu) {
+    public int updateMenu(Menu menu) {
         return menuMapper.updateMenu(menu);
     }
 
@@ -206,9 +206,9 @@ public class SysMenuServiceImpl implements ISysMenuService {
      * @return 结果
      */
     @Override
-    public String checkMenuNameUnique(SysMenu menu) {
+    public String checkMenuNameUnique(Menu menu) {
         Long menuId = Objects.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();
-        SysMenu info = menuMapper.checkMenuNameUnique(menu.getMenuName(), menu.getParentId());
+        Menu info = menuMapper.checkMenuNameUnique(menu.getMenuName(), menu.getParentId());
         if (Objects.nonNull(info) && info.getMenuId().longValue() != menuId.longValue()) {
             return UserConstants.MENU_NAME_NOT_UNIQUE;
         }

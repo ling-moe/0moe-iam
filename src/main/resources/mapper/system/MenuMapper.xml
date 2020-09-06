@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.lingmoe.iam.infra.mapper.SysMenuMapper">
+<mapper namespace="cn.lingmoe.iam.infra.mapper.MenuMapper">
 
-    <resultMap type="cn.lingmoe.iam.domain.entity.SysMenu" id="SysMenuResult">
+    <resultMap type="cn.lingmoe.iam.domain.entity.Menu" id="SysMenuResult">
         <id property="menuId" column="menu_id"/>
         <result property="menuName" column="menu_name"/>
         <result property="parentName" column="parent_name"/>
@@ -40,7 +40,7 @@
                path,
                create_by,
                create_time
-        FROM sys_menu
+        FROM iam_menu
     </sql>
 
     <select id="selectMenusByUserId" parameterType="Long"
@@ -57,7 +57,7 @@
                m.order_num,
                m.visible,
                m.create_time
-        FROM sys_menu m
+        FROM iam_menu m
                  LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
                  LEFT JOIN sys_user_role ur ON rm.role_id = ur.role_id
                  LEFT JOIN sys_role ro ON ur.role_id = ro.role_id
@@ -68,7 +68,7 @@
         ORDER BY m.order_num
     </select>
 
-    <select id="selectMenuNormalAll" resultType="cn.lingmoe.iam.domain.entity.SysMenu">
+    <select id="selectMenuNormalAll" resultType="cn.lingmoe.iam.domain.entity.Menu">
         SELECT m.menu_id,
                m.parent_id,
                m.menu_name,
@@ -76,10 +76,10 @@
                m.shortcut,
                m.icon,
                m.level_path,
-               m.order_num,
+               m.sort,
                m.router,
                m.creation_date
-        FROM sys_menu m
+        FROM iam_menu m
         WHERE m.menu_type IN ('R', 'D', 'M')
     </select>
 
@@ -91,7 +91,7 @@
     <select id="selectPermsByUserId" parameterType="Long"
             resultType="String">
         SELECT DISTINCT m.perms
-        FROM sys_menu m
+        FROM iam_menu m
                  LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
                  LEFT JOIN sys_user_role ur ON rm.role_id = ur.role_id
         WHERE ur.user_id =
@@ -101,7 +101,7 @@
     <select id="selectMenuIdsByRoleId" parameterType="Long"
             resultMap="SysMenuResult">
         SELECT DISTINCT m.menu_id, m.parent_id
-        FROM sys_menu m
+        FROM iam_menu m
                  LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
         WHERE rm.role_id =
               #{roleId}
@@ -111,42 +111,43 @@
     <select id="selectMenuTree" parameterType="Long"
             resultType="String">
         SELECT concat(m.menu_id, ifnull(m.perms, '')) AS perms
-        FROM sys_menu m
+        FROM iam_menu m
                  LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
         WHERE rm.role_id =
               #{roleId}
         ORDER BY m.parent_id, m.order_num
     </select>
 
-    <select id="selectMenuList" resultType="cn.lingmoe.iam.domain.entity.SysMenu">
+    <select id="selectMenuList" resultType="cn.lingmoe.iam.domain.entity.Menu">
         SELECT
             m.menu_id,
             m.menu_code,
             m.menu_name,
             m.parent_id,
-            m.order_num,
+            m.sort,
             m.menu_type,
             m.icon,
+            m.level,
             m.level_path,
             m.enabled_flag,
             m.created_by,
             m.creation_date
-        FROM sys_menu m
+        FROM iam_menu m
         WHERE m.menu_type IN ('R', 'D', 'M')
             <if test="menuCode != null and menuCode != ''">
                 <bind name="menuCodeLike" value="'%' + menuCode + '%'"/>
-                AND menu_code LIKE #{menuCodeLike}
+                AND m.menu_code LIKE #{menuCodeLike}
             </if>
             <if test="menuName != null and menuName != ''">
                 <bind name="menuNameLike" value="'%' + menuName + '%'"/>
-                AND menu_name LIKE #{menuNameLike}
+                AND m.menu_name LIKE #{menuNameLike}
             </if>
-        order by order_num
+        order by sort
     </select>
 
     <delete id="deleteMenuById" parameterType="Long">
         DELETE
-        FROM sys_menu
+        FROM iam_menu
         WHERE menu_id = #{menuId}
            OR parent_id = #{menuId}
     </delete>
@@ -163,25 +164,25 @@
                t.icon,
                t.path,
                t.remark,
-               (SELECT menu_name FROM sys_menu WHERE menu_id = t.parent_id) parent_name
-        FROM sys_menu t
+               (SELECT menu_name FROM iam_menu WHERE menu_id = t.parent_id) parent_name
+        FROM iam_menu t
         WHERE t.menu_id = #{menuId}
     </select>
 
     <select id="selectCountMenuByParentId" resultType="Integer">
         SELECT count(1)
-        FROM sys_menu
+        FROM iam_menu
         WHERE parent_id = #{menuId}
     </select>
 
-    <select id="checkMenuNameUnique" parameterType="cn.lingmoe.iam.domain.entity.SysMenu"
+    <select id="checkMenuNameUnique" parameterType="cn.lingmoe.iam.domain.entity.Menu"
             resultMap="SysMenuResult">
         <include refid="selectMenuVo"/>
         where menu_name=#{menuName} and parent_id = #{parentId}
     </select>
 
-    <update id="updateMenu" parameterType="cn.lingmoe.iam.domain.entity.SysMenu">
-        update sys_menu
+    <update id="updateMenu" parameterType="cn.lingmoe.iam.domain.entity.Menu">
+        update iam_menu
         <set>
             <if test="menuName != null and menuName != ''">menu_name = #{menuName},</if>
             <if test="parentId != null and parentId != 0">parent_id = #{parentId},</if>
@@ -204,8 +205,8 @@
         where menu_id = #{menuId}
     </update>
 
-    <insert id="insertMenu" parameterType="cn.lingmoe.iam.domain.entity.SysMenu">
-        insert into sys_menu(
+    <insert id="insertMenu" parameterType="cn.lingmoe.iam.domain.entity.Menu">
+        insert into iam_menu(
         <if test="menuId != null and menuId != 0">menu_id,</if>
         <if test="parentId != null and parentId != 0">parent_id,</if>
         <if test="menuName != null and menuName != ''">menu_name,</if>

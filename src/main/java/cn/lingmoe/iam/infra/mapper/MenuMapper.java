@@ -2,7 +2,8 @@ package cn.lingmoe.iam.infra.mapper;
 
 import java.util.List;
 
-import cn.lingmoe.iam.domain.entity.SysMenu;
+import cn.lingmoe.iam.domain.entity.Menu;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -10,20 +11,20 @@ import org.apache.ibatis.annotations.Param;
  *
  * @author ruoyi
  */
-public interface SysMenuMapper {
+public interface MenuMapper extends BaseMapper<Menu> {
     /**
      * 查询系统所有菜单
      *
      * @return 菜单列表
      */
-    List<SysMenu> selectMenuAll();
+    List<Menu> selectMenuAll();
 
     /**
      * 查询系统正常显示菜单（不含按钮）
      *
      * @return 菜单列表
      */
-    List<SysMenu> selectMenuNormalAll();
+    List<Menu> selectMenuNormalAll();
 
     /**
      * 根据用户ID查询菜单
@@ -31,7 +32,7 @@ public interface SysMenuMapper {
      * @param userId 用户ID
      * @return 菜单列表
      */
-    List<SysMenu> selectMenusByUserId(Long userId);
+    List<Menu> selectMenusByUserId(Long userId);
 
     /**
      * 根据用户ID查询权限
@@ -47,7 +48,7 @@ public interface SysMenuMapper {
      * @param roleId 角色ID
      * @return 权限列表
      */
-    List<SysMenu> selectMenuIdsByRoleId(Long roleId);
+    List<Menu> selectMenuIdsByRoleId(Long roleId);
 
     /**
      * 根据角色ID查询菜单
@@ -63,7 +64,7 @@ public interface SysMenuMapper {
      * @param menu 菜单信息
      * @return 菜单列表
      */
-    List<SysMenu> selectMenuList(SysMenu menu);
+    List<Menu> selectMenuList(Menu menu);
 
     /**
      * 删除菜单管理信息
@@ -79,7 +80,7 @@ public interface SysMenuMapper {
      * @param menuId 菜单ID
      * @return 菜单信息
      */
-    SysMenu selectMenuById(Long menuId);
+    Menu selectMenuById(Long menuId);
 
     /**
      * 查询菜单数量
@@ -95,7 +96,7 @@ public interface SysMenuMapper {
      * @param menu 菜单信息
      * @return 结果
      */
-    int insertMenu(SysMenu menu);
+    int insertMenu(Menu menu);
 
     /**
      * 修改菜单信息
@@ -103,7 +104,7 @@ public interface SysMenuMapper {
      * @param menu 菜单信息
      * @return 结果
      */
-    int updateMenu(SysMenu menu);
+    int updateMenu(Menu menu);
 
     /**
      * 校验菜单名称是否唯一
@@ -112,5 +113,5 @@ public interface SysMenuMapper {
      * @param parentId 父菜单ID
      * @return 结果
      */
-    SysMenu checkMenuNameUnique(@Param("menuName") String menuName, @Param("parentId") Long parentId);
+    Menu checkMenuNameUnique(@Param("menuName") String menuName, @Param("parentId") Long parentId);
 }

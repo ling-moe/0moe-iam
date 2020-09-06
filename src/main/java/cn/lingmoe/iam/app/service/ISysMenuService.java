@@ -1,13 +1,12 @@
 package cn.lingmoe.iam.app.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import cn.hutool.core.lang.tree.Tree;
 import cn.lingmoe.common.datastruct.Ztree;
 import cn.lingmoe.iam.domain.entity.RoleInfo;
-import cn.lingmoe.iam.domain.entity.SysMenu;
+import cn.lingmoe.iam.domain.entity.Menu;
 import cn.lingmoe.iam.domain.entity.UserInfo;
 
 
@@ -31,14 +30,14 @@ public interface ISysMenuService {
      * @param menu 菜单信息
      * @return 菜单列表
      */
-    List<Tree<Long>> selectMenuList(SysMenu menu);
+    List<Tree<Long>> selectMenuList(Menu menu);
 
     /**
      * 查询菜单集合
      *
      * @return 所有菜单信息
      */
-    List<SysMenu> selectMenuAll();
+    List<Menu> selectMenuAll();
 
     /**
      * 根据用户ID查询权限
@@ -55,7 +54,7 @@ public interface ISysMenuService {
      * @param roleId 角色ID
      * @return 权限列表
      */
-    List<SysMenu> selectMenuIdsByRoleId(Long roleId);
+    List<Menu> selectMenuIdsByRoleId(Long roleId);
 
     /**
      * 根据角色ID查询菜单
@@ -79,7 +78,7 @@ public interface ISysMenuService {
      * @param menuId 菜单ID
      * @return 菜单信息
      */
-    SysMenu selectMenuById(Long menuId);
+    Menu selectMenuById(Long menuId);
 
     /**
      * 查询菜单数量
@@ -103,7 +102,7 @@ public interface ISysMenuService {
      * @param menu 菜单信息
      * @return 结果
      */
-    int insertMenu(SysMenu menu);
+    int insertMenu(Menu menu);
 
     /**
      * 修改保存菜单信息
@@ -111,7 +110,7 @@ public interface ISysMenuService {
      * @param menu 菜单信息
      * @return 结果
      */
-    int updateMenu(SysMenu menu);
+    int updateMenu(Menu menu);
 
     /**
      * 校验菜单名称是否唯一
@@ -119,5 +118,5 @@ public interface ISysMenuService {
      * @param menu 菜单信息
      * @return 结果
      */
-    String checkMenuNameUnique(SysMenu menu);
+    String checkMenuNameUnique(Menu menu);
 }
